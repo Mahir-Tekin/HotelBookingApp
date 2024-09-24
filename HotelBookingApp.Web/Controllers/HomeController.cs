@@ -1,4 +1,5 @@
 using HotelBookingApp.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -17,7 +18,6 @@ namespace HotelBookingApp.Web.Controllers
         {
             return View();
         }
-
         public IActionResult Privacy()
         {
             return View();
