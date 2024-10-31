@@ -1,18 +1,27 @@
-using HotelBookingApp.Web.Models;
+using HotelBookingApp.Core.Domain.Entities;
+using HotelBookingApp.Infrastructure.Extensions;
+using HotelBookingApp.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<AppDbContext>(options => {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SQLCon"));
-});
-builder.Services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<AppDbContext>();
-builder.Services.ConfigureApplicationCookie(options =>
+builder.Services.AddApplicationDbContext(builder.Configuration);
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    options.LoginPath = "/Account/SignIn"; // Login sayfasýnýn yolu
-});
+    // Parola gereksinimleri ve kullanýcý adý ayarlarý burada yapýlandýrýlýr
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    options.User.RequireUniqueEmail = true;
+})
+.AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultTokenProviders();
 
 var app = builder.Build();
 
@@ -28,7 +37,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -1,97 +1,80 @@
-﻿using HotelBookingApp.Web.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using HotelBookingApp.Core.Application.DTO;
+using HotelBookingApp.Core.Application.Interfaces.IServices;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using HotelBookingApp.Web.ViewModels;
 
 namespace HotelBookingApp.Web.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
+        private readonly IIdentityService _identityService;
 
-        public AccountController(UserManager<AppUser> userManager,SignInManager<AppUser> signInManager)
+        public AccountController(IIdentityService identityService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _identityService = identityService;
         }
 
-        // GET: SignUp
+
         [HttpGet]
-        public IActionResult SignUp()
+        public IActionResult Register()
         {
             return View();
         }
 
-        // POST: SignUp
-        [HttpPost]
-        public async Task<IActionResult> SignUp(SignUpViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = new AppUser
-                {
-                    Name = model.Name,
-                    Surname = model.Surname,
-                    Email = model.Email,
-                    UserName = model.Email // Email as UserName
-                };
-
-                var result = await _userManager.CreateAsync(user, model.Password);
-
-                if (result.Succeeded)
-                {
-                    // Redirect to a successful registration page or home page
-                    return RedirectToAction("Index", "Home");
-                }
-
-                // Add errors to ModelState
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
-
-        public IActionResult SignIn()
-        {
-            return View();
-        }
 
         [HttpPost]
-
-        public async Task<IActionResult> SignIn(SignInViewModel model,string returnUrl = null)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterUserRequest model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-
-            if (result.Succeeded)
+            var result = await _identityService.RegisterUserAsync(model);
+            if (!result.Success)
             {
-                return RedirectToAction("Index", "Home");
+                ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                return View(model);
             }
 
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            return View(model);
+            return RedirectToAction("Login");
+        }
+
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> Login(LoginUserRequest model)
         {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var result = await _identityService.LoginUserAsync(model);
+            if (!result.Success)
+            {
+                ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                return View(model);
+            }
+
+            return RedirectToAction("Index", "Home"); 
         }
 
+        // Kullanıcı çıkış işlemi
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _identityService.LogoutUserAsync();
+            return RedirectToAction("Index", "Home"); 
+        }
     }
-
-
 }

@@ -1,0 +1,33 @@
+﻿@model HotelBookingApp.Core.Application.DTO.LoginUserRequest
+
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Login</h2>
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <form asp-action="Login" method="post">
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" type="email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" type="password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Login</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
