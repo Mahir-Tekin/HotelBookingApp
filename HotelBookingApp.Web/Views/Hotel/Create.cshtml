@@ -1,4 +1,4 @@
-﻿@model CreateHotelRequest
+﻿@model HotelBookingApp.Core.Application.DTO.CreateHotelRequest
 
 @{
     ViewBag.Title = "Add New Hotel";
@@ -13,7 +13,7 @@
     </div>
 }
 
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label asp-for="Name" class="control-label"></label>
         <input asp-for="Name" class="form-control" />
@@ -48,6 +48,12 @@
         <label asp-for="Description" class="control-label"></label>
         <textarea asp-for="Description" class="form-control"></textarea>
         <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Picture" class="control-label">Hotel Picture</label>
+        <input asp-for="Picture" class="form-control" type="file" />
+        <span asp-validation-for="Picture" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Save</button>

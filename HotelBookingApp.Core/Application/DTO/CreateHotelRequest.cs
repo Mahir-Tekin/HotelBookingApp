@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace HotelBookingApp.Core.Application.DTO
 {
@@ -14,5 +10,7 @@ namespace HotelBookingApp.Core.Application.DTO
         public int StarRating { get; set; }
         public int? RoomCount { get; set; }
         public string? Description { get; set; }
+
+        public IFormFile? Picture { get; set; } 
     }
 }

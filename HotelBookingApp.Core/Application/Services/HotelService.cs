@@ -8,16 +8,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.FileProviders;
 
 namespace HotelBookingApp.Core.Application.Services
 {
     public class HotelService : IHotelService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileProvider _fileProvider;
 
-        public HotelService(IUnitOfWork unitOfWork)
+        public HotelService(IUnitOfWork unitOfWork,IFileProvider fileProvider)
         {
             _unitOfWork = unitOfWork;
+            _fileProvider = fileProvider;
         }
 
         // Tüm otelleri listeleme
@@ -64,6 +67,7 @@ namespace HotelBookingApp.Core.Application.Services
         // Yeni otel ekleme
         public async Task<ServiceResult<bool>> CreateHotelAsync(CreateHotelRequest request)
         {
+
             var hotel = new Hotel
             {
                 Id = Guid.NewGuid(),
@@ -74,6 +78,15 @@ namespace HotelBookingApp.Core.Application.Services
                 RoomCount = request.RoomCount,
                 Description = request.Description
             };
+            if (request.Picture != null && request.Picture.Length > 0)
+            {
+                var wwwrootFolder = _fileProvider.GetDirectoryContents("wwwroot");
+                string randomFileName = $"{Guid.NewGuid().ToString()}{Path.GetExtension(request.Picture.FileName)}";
+                var picturePath = Path.Combine(wwwrootFolder!.First(x => x.Name == "hotelpictures").PhysicalPath!, randomFileName);
+                using var stream = new FileStream(picturePath, FileMode.Create);
+                await request.Picture.CopyToAsync(stream);
+                hotel.Picture = randomFileName;
+            }
 
             await _unitOfWork.Hotels.AddAsync(hotel); // Asenkron Ekleme
             await _unitOfWork.CompleteAsync(); // İşlemi kaydet

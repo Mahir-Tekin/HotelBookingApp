@@ -21,9 +21,16 @@ namespace HotelBookingApp.Infrastructure.Persistence
         {
             modelBuilder.ApplyConfiguration(new HotelConfiguration());
             modelBuilder.ApplyConfiguration(new RoomTypeConfiguration());
+            modelBuilder.Entity<IdentityRole>().HasData(
+                new IdentityRole { Name = "Admin", NormalizedName = "ADMIN" },
+                new IdentityRole { Name = "HotelAdmin", NormalizedName = "HOTELADMIN" },
+                new IdentityRole { Name = "Manager", NormalizedName = "MANAGER" }
+    );
 
 
             base.OnModelCreating(modelBuilder);
+
+
         }
     }
 

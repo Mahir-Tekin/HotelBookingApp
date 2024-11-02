@@ -20,4 +20,8 @@
     <ProjectReference Include="..\HotelBookingApp.Infrastructure\HotelBookingApp.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\hotelpictures\" />
+  </ItemGroup>
+
 </Project>
