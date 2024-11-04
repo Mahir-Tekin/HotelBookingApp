@@ -16,6 +16,7 @@
 <table class="table table-striped">
     <thead>
         <tr>
+            <th>Picture</th>
             <th>Id</th>
             <th>Name</th>
             <th>City</th>
@@ -24,12 +25,23 @@
             <th>Room Count</th>
             <th>Description</th>
             <th>Actions</th>
+            <th>Amenities</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var hotel in Model)
         {
             <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(hotel.Picture))
+                    {
+                        <img src="~/hotelpictures/@hotel.Picture" alt="Hotel Picture" width="80" height="80" style="object-fit: cover; border-radius: 5px;" />
+                    }
+                    else
+                    {
+                        <span>No Image</span>
+                    }
+                </td>
                 <td>@hotel.Id</td>
                 <td>@hotel.Name</td>
                 <td>@hotel.City</td>
@@ -38,9 +50,14 @@
                 <td>@hotel.RoomCount</td>
                 <td>@hotel.Description</td>
                 <td>
+                    @foreach(var amenity in hotel.HotelAmenities)
+                    {
+                        <span><i class="@amenity.IconClass">@amenity.Name</i></span>
+                    }
+                </td>
+                <td>
                     <a asp-action="Details" asp-route-id="@hotel.Id" class="btn btn-info">Details</a>
                     <a asp-action="Edit" asp-route-id="@hotel.Id" class="btn btn-warning">Edit</a>
-                    <!-- Delete butonuna tıklandığında modal tetiklenir -->
                     <button type="button" class="btn btn-danger" onclick="showDeleteModal('@hotel.Id', '@hotel.Name')">Delete</button>
                 </td>
             </tr>
@@ -78,9 +95,9 @@
 @section Scripts {
     <script>
         function showDeleteModal(id, name) {
-            document.getElementById("hotelId").value = id; // Modal içinde ID alanını doldur
-            document.getElementById("hotelName").innerText = name; // Modal içinde otel adını göster
-            $('#deleteModal').modal('show'); // Modalı göster
+            document.getElementById("hotelId").value = id;
+            document.getElementById("hotelName").innerText = name;
+            $('#deleteModal').modal('show');
         }
     </script>
 }

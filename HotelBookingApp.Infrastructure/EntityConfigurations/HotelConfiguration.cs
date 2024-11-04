@@ -1,11 +1,6 @@
 ﻿using HotelBookingApp.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HotelBookingApp.Infrastructure.EntityConfigurations
 {
@@ -19,26 +14,31 @@ namespace HotelBookingApp.Infrastructure.EntityConfigurations
 
             builder.Property(h => h.Name)
                 .IsRequired()
-                .HasMaxLength(100); 
+                .HasMaxLength(100);
 
             builder.Property(h => h.City)
                 .IsRequired()
-                .HasMaxLength(50); 
+                .HasMaxLength(50);
 
             builder.Property(h => h.Address)
-                .HasMaxLength(200); 
+                .HasMaxLength(200);
 
             builder.Property(h => h.StarRating)
                 .IsRequired()
-                .HasDefaultValue(1); 
+                .HasDefaultValue(1);
 
             builder.Property(h => h.RoomCount)
-                .IsRequired(false) 
-                .HasDefaultValue(0); 
+                .IsRequired(false)
+                .HasDefaultValue(0);
 
             builder.Property(h => h.Description)
-                .HasMaxLength(500); 
+                .HasMaxLength(500);
 
+            // Many-to-many relationship between Hotel and HotelAmenity
+            builder
+                .HasMany(h => h.Amenities)
+                .WithMany(a => a.Hotels)
+                .UsingEntity(j => j.ToTable("HotelHotelAmenities")); // Ara tablo ismi
         }
     }
 }

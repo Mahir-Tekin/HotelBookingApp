@@ -26,10 +26,11 @@ namespace HotelBookingApp.Infrastructure.Extensions
                 }));
 
             // Identity yapılandırmasını ekle
-           
+
 
             // Dependency Injection yapılandırmaları
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<IHotelAmenityService, HotelAmenityService>();
             services.AddScoped<IHotelRepository, HotelRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IHotelService, HotelService>();

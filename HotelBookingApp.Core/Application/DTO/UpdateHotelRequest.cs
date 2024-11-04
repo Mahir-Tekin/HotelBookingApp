@@ -16,5 +16,8 @@ namespace HotelBookingApp.Core.Application.DTO
         public int? RoomCount { get; set; }
         public string? Description { get; set; }
         public IFormFile? Picture { get; set; }
+        public string? CurrentPicture { get; set; }
+
+        public List<AmenityDto> Amenities { get; set; } = new List<AmenityDto>();
     }
 }

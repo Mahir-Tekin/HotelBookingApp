@@ -13,7 +13,7 @@
     </div>
 }
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label asp-for="Name" class="control-label"></label>
         <input asp-for="Name" class="form-control" />
@@ -48,6 +48,43 @@
         <label asp-for="Description" class="control-label"></label>
         <textarea asp-for="Description" class="form-control"></textarea>
         <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Current Picture</label>
+        @if (!string.IsNullOrEmpty(Model.CurrentPicture))
+        {
+            <div>
+                <img src="~/hotelpictures/@Model.CurrentPicture" alt="Hotel Picture" width="100" height="100" style="object-fit: cover; border-radius: 5px;" />
+            </div>
+        }
+        else
+        {
+            <p>No image available</p>
+        }
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Picture" class="control-label">Upload New Picture</label>
+        <input asp-for="Picture" class="form-control" type="file" />
+        <span asp-validation-for="Picture" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">Amenities</label>
+        <div>
+            @for (int i = 0; i < Model.Amenities.Count; i++)
+            {
+                <div class="form-check">
+                    <input asp-for="@Model.Amenities[i].IsChecked" type="checkbox" class="form-check-input" />
+                    <label asp-for="@Model.Amenities[i].IsChecked" class="form-check-label"><i class="@Model.Amenities[i].IconClass"></i>@Model.Amenities[i].Name</label>
+                    <input type="hidden" asp-for="@Model.Amenities[i].Name" />
+                    <input type="hidden" asp-for="@Model.Amenities[i].IconClass" />
+                    <input type="hidden" asp-for="@Model.Amenities[i].Id" />
+
+                </div>
+            }
+        </div>
     </div>
 
     <button type="submit" class="btn btn-primary">Save</button>

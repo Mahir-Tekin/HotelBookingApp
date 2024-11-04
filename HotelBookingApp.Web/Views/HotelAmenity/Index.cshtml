@@ -1,0 +1,46 @@
+﻿@model IEnumerable<HotelBookingApp.Core.Application.DTO.HotelAmenityDto>
+
+@{
+    ViewBag.Title = "Hotel Amenities";
+}
+
+<h2>Hotel Amenities</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Icon</th> <!-- Yeni İkon Sütunu -->
+            <th>Name</th>
+            <th>Icon Class</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var amenity in Model)
+        {
+            <tr>
+                <td><i class="@amenity.IconClass"></i></td> <!-- İkon Sütunu -->
+                <td>@amenity.Name</td>
+                <td>@amenity.IconClass</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@amenity.Id" class="btn btn-info">Details</a>
+                    <a asp-action="Edit" asp-route-id="@amenity.Id" class="btn btn-warning">Edit</a>
+
+                    <!-- Delete Button Form -->
+                    <form asp-action="DeleteConfirmed" asp-route-id="@amenity.Id" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-primary">Add New Amenity</a>

@@ -17,8 +17,10 @@ namespace HotelBookingApp.Core.Domain.Entities
         public string? Description { get; set; }
         public string? Picture { get; set; }
 
+        public ICollection<HotelAmenity> Amenities { get; set; } = new List<HotelAmenity>();
+
 
         public ICollection<RoomType> RoomTypes { get; set; } = new List<RoomType>();
-
+        
     }
 }
