@@ -4,6 +4,7 @@ using HotelBookingApp.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelBookingApp.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241105103010_Added_Room_Amenityies")]
+    partial class Added_Room_Amenityies
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -160,73 +163,73 @@ namespace HotelBookingApp.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7e3f2641-9a56-4136-8afd-6fd3baadf403"),
+                            Id = new Guid("8980951c-3919-43d8-91b5-46fab173917f"),
                             IconClass = "bi bi-wifi",
                             Name = "Free Wi-Fi"
                         },
                         new
                         {
-                            Id = new Guid("4a3f60c1-24d8-4492-b3f9-7dd72723cf44"),
+                            Id = new Guid("f372202b-a7fb-4ab2-a9a8-7817fd225045"),
                             IconClass = "bi bi-car-front",
                             Name = "Parking"
                         },
                         new
                         {
-                            Id = new Guid("82ad6a50-49a0-4429-8957-715e95bbbd49"),
+                            Id = new Guid("cd6a4764-9814-4658-8ecc-8d98ae73b5cd"),
                             IconClass = "bi bi-water",
                             Name = "Swimming Pool"
                         },
                         new
                         {
-                            Id = new Guid("72b3cba6-6f29-4b6a-ae6f-13eb43787e10"),
+                            Id = new Guid("f31a60c9-579f-4821-932d-359e27fd100b"),
                             IconClass = "bi bi-bar-chart-line",
                             Name = "Fitness Center"
                         },
                         new
                         {
-                            Id = new Guid("6a203e9c-734a-4555-a81a-bef8af81bf80"),
+                            Id = new Guid("de0ce3ab-0678-4240-8e38-5f1f140b59d6"),
                             IconClass = "bi bi-shop",
                             Name = "Restaurant"
                         },
                         new
                         {
-                            Id = new Guid("9c66c16f-b93f-4c8f-b62e-7fbf6045b174"),
+                            Id = new Guid("20755e4b-0ca2-47fb-9ac0-f1c54be98646"),
                             IconClass = "bi bi-house-door",
                             Name = "Room Service"
                         },
                         new
                         {
-                            Id = new Guid("dc7fa567-45ea-4d23-bcee-f69049bd36a8"),
+                            Id = new Guid("cf0eadb6-79c8-45e8-8afb-db18cec48431"),
                             IconClass = "bi bi-basket",
                             Name = "Laundry Service"
                         },
                         new
                         {
-                            Id = new Guid("149233e8-f536-475b-b4cd-d5cc917d8489"),
+                            Id = new Guid("52ebb947-ad05-40b2-8a33-f01798ffeb60"),
                             IconClass = "bi bi-thermometer-sun",
                             Name = "Air Conditioning"
                         },
                         new
                         {
-                            Id = new Guid("f128b5f5-2d55-4256-a0a8-fd17b2eb00df"),
+                            Id = new Guid("6fc5ab98-bf28-4fe0-8f10-4a5582b5adda"),
                             IconClass = "bi bi-briefcase",
                             Name = "Business Center"
                         },
                         new
                         {
-                            Id = new Guid("9cb1d3f1-cf90-4287-8699-ece23fd3c549"),
+                            Id = new Guid("fce910b9-d4ce-4434-8e1a-d0d399b45a01"),
                             IconClass = "bi bi-megaphone",
                             Name = "Conference Room"
                         },
                         new
                         {
-                            Id = new Guid("d35e4f7c-397e-4be3-baa9-d0e42424686b"),
+                            Id = new Guid("a1beb60b-1d41-4b8a-bf5d-583e937d2867"),
                             IconClass = "bi bi-slash-circle",
                             Name = "Non-Smoking Rooms"
                         },
                         new
                         {
-                            Id = new Guid("7336d6a5-b586-46cd-b22a-42ea20d6c361"),
+                            Id = new Guid("8047b725-d1a7-4f9a-b72f-76789d16349b"),
                             IconClass = "bi bi-airplane-engines",
                             Name = "Airport Shuttle"
                         });
@@ -273,91 +276,91 @@ namespace HotelBookingApp.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("27579980-648c-4348-a999-c658e9ca95bc"),
+                            Id = new Guid("e0de1a28-e88b-42af-9971-8a3baa489207"),
                             IconClass = "bi bi-tv",
                             Name = "Television"
                         },
                         new
                         {
-                            Id = new Guid("5994484d-32ac-4ac2-a179-cd93fb04c011"),
+                            Id = new Guid("899eb8bf-bf60-4105-a523-c1f267dbf5bf"),
                             IconClass = "bi bi-cup-straw",
                             Name = "Mini Bar"
                         },
                         new
                         {
-                            Id = new Guid("f9963bd7-b0a5-4b08-a6fe-c7216545c40b"),
+                            Id = new Guid("5c2bde13-7e77-4844-830d-f006ca79d52d"),
                             IconClass = "bi bi-cup-hot",
                             Name = "Coffee Maker"
                         },
                         new
                         {
-                            Id = new Guid("3e75b9ce-094b-455d-9a8b-d4d8ee4275a8"),
+                            Id = new Guid("30e56da7-50c4-40d8-9632-c5fee69ee92d"),
                             IconClass = "bi bi-wind",
                             Name = "Hair Dryer"
                         },
                         new
                         {
-                            Id = new Guid("7e623073-df55-407f-8d16-40cb63f27fb2"),
+                            Id = new Guid("be768501-89d0-4d3b-82a1-a6b7fd928789"),
                             IconClass = "bi bi-house",
                             Name = "Iron and Ironing Board"
                         },
                         new
                         {
-                            Id = new Guid("85f71c3c-7d18-41c4-a80d-755dbfe0dc32"),
+                            Id = new Guid("465429ed-0024-4d59-89de-a25b85d9e6e2"),
                             IconClass = "bi bi-safe",
                             Name = "Safe Deposit Box"
                         },
                         new
                         {
-                            Id = new Guid("b9f69a6a-df43-4ee3-b650-4a8ebf643601"),
+                            Id = new Guid("20f38536-d36a-43ed-a9ee-c836746ec5ef"),
                             IconClass = "bi bi-thermometer-sun",
                             Name = "Air Conditioning"
                         },
                         new
                         {
-                            Id = new Guid("03bfb111-0165-4177-80ac-1d8157341282"),
+                            Id = new Guid("0a969e83-6624-4832-8b38-363a3c8e437c"),
                             IconClass = "bi bi-table",
                             Name = "Work Desk"
                         },
                         new
                         {
-                            Id = new Guid("3a330ab1-fd09-4a02-80ed-8bc3659154da"),
+                            Id = new Guid("57e3ad07-6880-42af-8bc1-4c407cd72b84"),
                             IconClass = "bi bi-basket",
                             Name = "Free Toiletries"
                         },
                         new
                         {
-                            Id = new Guid("fd529972-2e60-4096-987e-ed4460cb5ef1"),
+                            Id = new Guid("6cb94d74-ecca-4682-a4ae-739157b20e3c"),
                             IconClass = "bi bi-bell",
                             Name = "Room Service"
                         },
                         new
                         {
-                            Id = new Guid("e1dc3683-0b35-4047-82ce-540b3ed51aee"),
+                            Id = new Guid("33fe5392-dd8f-470e-878d-68c26e36db33"),
                             IconClass = "bi bi-patch-check",
                             Name = "Bathrobe and Slippers"
                         },
                         new
                         {
-                            Id = new Guid("03af9493-e001-4c6b-94e8-19c9001b91df"),
+                            Id = new Guid("aeea7768-ae4e-4178-a5a0-821abeabac35"),
                             IconClass = "bi bi-droplet",
                             Name = "Complimentary Bottled Water"
                         },
                         new
                         {
-                            Id = new Guid("a210df25-0550-4d14-b571-3d17ce576163"),
+                            Id = new Guid("0c4edb96-b534-4c0c-a9e4-cca237054d6f"),
                             IconClass = "bi bi-wifi",
                             Name = "High-Speed Internet"
                         },
                         new
                         {
-                            Id = new Guid("dbfa96fc-a157-4b75-9082-b593dfac1c1e"),
+                            Id = new Guid("05736782-638f-46d3-b1b6-8d5a0778f7bf"),
                             IconClass = "bi bi-slash",
                             Name = "Blackout Curtains"
                         },
                         new
                         {
-                            Id = new Guid("b4f1fcb5-16f5-4437-8764-0ce418aea73e"),
+                            Id = new Guid("e6c3fb6f-12a6-4a7e-8fc8-60b7440935f0"),
                             IconClass = "bi bi-volume-mute",
                             Name = "Soundproof Windows"
                         });
@@ -438,19 +441,19 @@ namespace HotelBookingApp.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ed29a5bc-a0fd-424e-a5ac-ad984ccc3ade",
+                            Id = "42db8436-53a6-472c-9226-ca7d1392c025",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "422ed047-78d8-4844-a9f5-cca51181a7fa",
+                            Id = "135aee72-c3f1-4fdb-8737-a74971e35751",
                             Name = "HotelAdmin",
                             NormalizedName = "HOTELADMIN"
                         },
                         new
                         {
-                            Id = "1a9e5bdc-6ad9-4a5c-b617-b6263a98994c",
+                            Id = "ee745fae-3731-4cc1-a15e-793560bc0f8e",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         });

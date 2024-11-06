@@ -1,10 +1,6 @@
-﻿@model IEnumerable<HotelBookingApp.Core.Application.DTO.HotelAmenityDto>
+﻿@model IEnumerable<RoomAmenityDto>
 
-@{
-    ViewBag.Title = "Hotel Amenities";
-}
-
-<h2>Hotel Amenities</h2>
+<h2>Room Amenities</h2>
 
 @if (TempData["ErrorMessage"] != null)
 {
@@ -16,7 +12,7 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Icon</th> 
+            <th>Icon</th>
             <th>Name</th>
             <th>Icon Class</th>
             <th>Actions</th>

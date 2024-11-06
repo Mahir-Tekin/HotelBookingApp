@@ -58,6 +58,7 @@
                 <td>
                     <a asp-action="Details" asp-route-id="@hotel.Id" class="btn btn-info">Details</a>
                     <a asp-action="Edit" asp-route-id="@hotel.Id" class="btn btn-warning">Edit</a>
+                    <a asp-action="rooms" asp-controller="roomtype" asp-route-id="@hotel.Id" class="btn btn-warning">Rooms</a>
                     <button type="button" class="btn btn-danger" onclick="showDeleteModal('@hotel.Id', '@hotel.Name')">Delete</button>
                 </td>
             </tr>

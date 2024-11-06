@@ -39,6 +39,25 @@ namespace HotelBookingApp.Infrastructure.Persistence
                 new HotelAmenity { Id = Guid.NewGuid(), Name = "Airport Shuttle", IconClass = "bi bi-airplane-engines" }
             );
 
+            modelBuilder.Entity<RoomAmenity>().HasData(
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "Television", IconClass = "bi bi-tv" },
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "Mini Bar", IconClass = "bi bi-cup-straw" },
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "Coffee Maker", IconClass = "bi bi-cup-hot" },
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "Hair Dryer", IconClass = "bi bi-wind" },
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "Iron and Ironing Board", IconClass = "bi bi-house" },
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "Safe Deposit Box", IconClass = "bi bi-safe" },
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "Air Conditioning", IconClass = "bi bi-thermometer-sun" },
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "Work Desk", IconClass = "bi bi-table" },
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "Free Toiletries", IconClass = "bi bi-basket" },
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "Room Service", IconClass = "bi bi-bell" },
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "Bathrobe and Slippers", IconClass = "bi bi-patch-check" },
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "Complimentary Bottled Water", IconClass = "bi bi-droplet" },
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "High-Speed Internet", IconClass = "bi bi-wifi" },
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "Blackout Curtains", IconClass = "bi bi-slash" },
+                new RoomAmenity { Id = Guid.NewGuid(), Name = "Soundproof Windows", IconClass = "bi bi-volume-mute" }
+            );
+
+
 
             base.OnModelCreating(modelBuilder);
 

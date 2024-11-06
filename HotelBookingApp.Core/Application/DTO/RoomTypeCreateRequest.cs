@@ -1,13 +1,18 @@
-﻿using System;
+﻿
+using Microsoft.AspNetCore.Http;
 
-namespace HotelBookingApp.Core.Application.Dto
+namespace HotelBookingApp.Core.Application.DTO
 {
-    public class RoomTypeCreateRequest
+    public record RoomTypeCreateRequest
     {
         public string Name { get; set; } = default!; 
-        public string? Description { get; set; } 
-        public int Capacity { get; set; } 
+        public string? Description { get; set; }
+        public int Capacity { get; set; }
+        public Guid HotelId { get; set; }
+        public IFormFile? Picture { get; set; }
 
-        public Guid HotelId { get; set; } 
+
+        public List<AmenityDto> Amenities { get; set; } = new List<AmenityDto>();
+
     }
 }

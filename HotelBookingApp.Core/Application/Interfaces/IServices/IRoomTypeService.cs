@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using HotelBookingApp.Core.Application.Dto;
+﻿
 using HotelBookingApp.Core.Application.DTO;
 
 namespace HotelBookingApp.Core.Application.Interfaces.IServices
@@ -13,5 +10,7 @@ namespace HotelBookingApp.Core.Application.Interfaces.IServices
         Task<ServiceResult<bool>> CreateRoomTypeAsync(RoomTypeCreateRequest request);
         Task<ServiceResult<bool>> UpdateRoomTypeAsync(Guid id, RoomTypeUpdateRequest request);
         Task<ServiceResult<bool>> DeleteRoomTypeAsync(Guid id);
+        Task<ServiceResult<RoomTypeCreateRequest>> PrepareRoomTypeCreationAsync(Guid id);
+        Task<ServiceResult<RoomTypeUpdateRequest>> PrepareUpdateRoomTypeAsync(Guid id);
     }
 }

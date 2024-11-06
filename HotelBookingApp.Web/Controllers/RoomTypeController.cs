@@ -1,4 +1,4 @@
-﻿using HotelBookingApp.Core.Application.Dto;
+﻿using HotelBookingApp.Core.Application.DTO;
 using HotelBookingApp.Core.Application.Interfaces.IServices;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,16 +15,16 @@ namespace HotelBookingApp.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRoomTypesByHotelId(Guid hotelId)
+        public async Task<IActionResult> Rooms(Guid Id)
         {
-            var result = await _roomTypeService.GetRoomTypesByHotelIdAsync(hotelId);
+            var result = await _roomTypeService.GetRoomTypesByHotelIdAsync(Id);
             if (!result.Success)
             {
                 TempData["ErrorMessage"] = result.ErrorMessage;
-                return RedirectToAction("Error"); // Bir hata sayfasına veya uygun bir sayfaya yönlendirme yapabilirsin
+                return RedirectToAction("Error"); 
             }
 
-            return View("RoomTypes", result.Data); // RoomTypes isimli bir view ile listeleme yapılabilir
+            return View(result.Data); 
         }
 
         // Tek bir oda türünün detaylarını görüntüleme (Details View)
@@ -42,9 +42,15 @@ namespace HotelBookingApp.Web.Controllers
 
         // Yeni oda türü oluşturma sayfasını görüntüleme (Create View)
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create(Guid id)
         {
-            return View();
+            var response = await _roomTypeService.PrepareRoomTypeCreationAsync(id);
+            if (!response.Success)
+            {
+                TempData["ErrorMessage"] = response.ErrorMessage;
+                return RedirectToAction("Index");
+            }
+            return View(response.Data);
         }
 
         // Yeni oda türü oluşturma işlemi (Create Post)
@@ -64,32 +70,24 @@ namespace HotelBookingApp.Web.Controllers
                 return View(request);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Rooms");
         }
 
         // Oda türü güncelleme sayfasını görüntüleme (Edit View)
+
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var result = await _roomTypeService.GetRoomTypeByIdAsync(id);
+            var result = await _roomTypeService.PrepareUpdateRoomTypeAsync(id);
             if (!result.Success)
             {
-                TempData["ErrorMessage"] = result.ErrorMessage;
-                return RedirectToAction("Index");
+                TempData["ErrorMessage"] = result?.ErrorMessage;
+                return View();
             }
 
-            var roomTypeData = new RoomTypeUpdateRequest
-            {
-                Name = result.Data.Name,
-                Description = result.Data.Description,
-                Capacity = result.Data.Capacity,
-                HotelId = result.Data.HotelId
-            };
-
-            return View(roomTypeData);
+            return View(result.Data);
         }
 
-        // Oda türü güncelleme işlemi (Edit Post)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, RoomTypeUpdateRequest request)
@@ -109,22 +107,11 @@ namespace HotelBookingApp.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        // Oda türü silme onay sayfasını görüntüleme (Delete Confirm View)
-        [HttpGet]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            var result = await _roomTypeService.GetRoomTypeByIdAsync(id);
-            if (!result.Success)
-            {
-                TempData["ErrorMessage"] = result.ErrorMessage;
-                return RedirectToAction("Index");
-            }
 
-            return View(result.Data);
-        }
+
 
         // Oda türü silme işlemi (Delete Post)
-        [HttpPost, ActionName("Delete")]
+        [HttpGet, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
@@ -135,7 +122,7 @@ namespace HotelBookingApp.Web.Controllers
                 return RedirectToAction("Index");
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("rooms");
         }
     }
 }

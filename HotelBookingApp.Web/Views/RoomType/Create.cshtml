@@ -1,0 +1,83 @@
+﻿@model RoomTypeCreateRequest
+
+@{
+    ViewBag.Title = "Create Room Type";
+}
+
+<h2>Create Room Type</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+
+    <input asp-for="HotelId" type="hidden"  />
+    <!-- Room Type Name -->
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+        <label asp-for="Description" class="control-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <!-- Capacity -->
+    <div class="form-group">
+        <label asp-for="Capacity" class="control-label"></label>
+        <input asp-for="Capacity" class="form-control" type="number" />
+        <span asp-validation-for="Capacity" class="text-danger"></span>
+    </div>
+
+    <!-- Hotel ID (Hidden) -->
+    <input asp-for="HotelId" type="hidden" />
+
+    <!-- Picture Upload -->
+    <div class="form-group">
+        <label asp-for="Picture" class="control-label">Upload Picture</label>
+        <input asp-for="Picture" class="form-control" type="file" />
+        <span asp-validation-for="Picture" class="text-danger"></span>
+    </div>
+
+    <!-- Amenities (Checkboxes) -->
+    <div class="form-group">
+        <label class="control-label">Amenities</label>
+        <div>
+            @if (Model.Amenities != null)
+            {
+                @for (int i = 0; i < Model.Amenities.Count; i++)
+                {
+                    <div class="form-check">
+                        <input asp-for="@Model.Amenities[i].IsChecked" type="checkbox" class="form-check-input" />
+                        <label asp-for="@Model.Amenities[i].IsChecked" class="form-check-label">
+                            <i class="@Model.Amenities[i].IconClass"></i> @Model.Amenities[i].Name
+                        </label>
+                        <input type="hidden" asp-for="@Model.Amenities[i].Name" />
+                        <input type="hidden" asp-for="@Model.Amenities[i].IconClass" />
+                        <input type="hidden" asp-for="@Model.Amenities[i].Id" />
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No amenities available.</p>
+            }
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

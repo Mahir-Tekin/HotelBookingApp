@@ -1,6 +1,5 @@
 ﻿using HotelBookingApp.Core.Application.DTO;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+
 
 namespace HotelBookingApp.Core.Application.Interfaces.IServices
 {

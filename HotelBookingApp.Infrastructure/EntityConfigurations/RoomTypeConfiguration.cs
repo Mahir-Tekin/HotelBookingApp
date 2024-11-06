@@ -29,7 +29,13 @@ namespace HotelBookingApp.Infrastructure.EntityConfigurations
             builder.HasOne(rt => rt.Hotel)
                 .WithMany(h => h.RoomTypes)
                 .HasForeignKey(rt => rt.HotelId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(rt => rt.Amenities)
+                .WithMany(h => h.RoomTypes)
+                .UsingEntity(j => j
+                .ToTable("RoomRoomAmenities"));
+
 
         }
     }
