@@ -4,11 +4,11 @@ namespace HotelBookingApp.Core.Domain.Entities
 {
     public class Room
     {
-        public Guid Id { get; set; } // Benzersiz tanımlayıcı
-        public string RoomNumber { get; set; } = default!; // Oda numarası
+        public Guid Id { get; set; } 
+        public string RoomNumber { get; set; } = default!; 
 
         // RoomType ile ilişki
-        public Guid RoomTypeId { get; set; } // Yabancı anahtar
-        public RoomType RoomType { get; set; } = default!; // Oda türü ile ilişki
+        public Guid RoomTypeId { get; set; } 
+        public RoomType RoomType { get; set; } = default!; 
     }
 }

@@ -39,6 +39,7 @@ namespace HotelBookingApp.Infrastructure.Extensions
             services.AddScoped<IIdentityRepository, IdentityRepository>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IRoomAmenityService, RoomAmenityService>();
+            services.AddScoped<IRoomService, RoomService>();
 
 
             return services;

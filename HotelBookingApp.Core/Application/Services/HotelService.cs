@@ -8,18 +8,11 @@ using Microsoft.Extensions.FileProviders;
 
 namespace HotelBookingApp.Core.Application.Services
 {
-    public class HotelService : IHotelService
+    public class HotelService(IUnitOfWork unitOfWork, IFileProvider fileProvider, IHotelAmenityService hotelAmenityService) : IHotelService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IFileProvider _fileProvider;
-        private readonly IHotelAmenityService _hotelAmenityService;
-
-        public HotelService(IUnitOfWork unitOfWork, IFileProvider fileProvider, IHotelAmenityService hotelAmenityService)
-        {
-            _unitOfWork = unitOfWork;
-            _fileProvider = fileProvider;
-            _hotelAmenityService = hotelAmenityService;
-        }
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IFileProvider _fileProvider = fileProvider;
+        private readonly IHotelAmenityService _hotelAmenityService = hotelAmenityService;
 
         // Tüm otelleri listeleme
         public async Task<ServiceResult<List<HotelDto>>> GetAllHotelsWithAmenityAsync()
