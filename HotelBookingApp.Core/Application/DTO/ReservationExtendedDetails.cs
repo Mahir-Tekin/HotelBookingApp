@@ -12,5 +12,7 @@ namespace HotelBookingApp.Core.Application.DTO
         public string? HotelName { get; set; }
         public string? RoomName { get; set; }
         public string? RoomTypePictue { get; set; }
+        public Guid? HotelId { get; set; }
+
     }
 }

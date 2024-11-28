@@ -2,6 +2,8 @@
 using HotelBookingApp.Core.Domain.Entities;
 using HotelBookingApp.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using static HotelBookingApp.Core.Application.Enums.CoreLayerEnums;
 
 namespace HotelBookingApp.Infrastructure.Repository
 {
@@ -28,7 +30,14 @@ namespace HotelBookingApp.Infrastructure.Repository
                 .Include(rs => rs.User)
                 .ToListAsync();
         }
-
+        public async Task<bool> ChangeReservationStatusAsync(Guid reservaitonId, ReservationStatus status)
+        {
+            var reservation = _appDbContext.Reservations.FirstOrDefault(r => r.Id == reservaitonId);
+            if (reservation == null) { return false; }
+            reservation.Status = status;
+            _appDbContext.SaveChanges();
+            return true;
+        }
 
     }
 }

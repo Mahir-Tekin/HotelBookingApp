@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using static HotelBookingApp.Core.Application.Enums.CoreLayerEnums;
 
 namespace HotelBookingApp.Core.Application.Services
 {
@@ -86,15 +87,33 @@ namespace HotelBookingApp.Core.Application.Services
             ).ToList();
             return ServiceResult<List<ReservationExtendedDetails>>.SuccessResult(reservationDtos);
         }
-        
-        public async Task<ServiceResult<List<ReservationExtendedDetails>>> GetHotelReservations(string userMail,Guid hotel)
+
+        public async Task<ServiceResult<List<ReservationExtendedDetails>>> GetHotelReservations(
+    string userMail, Guid hotel, string? status = null, int? reservationNumber = null)
         {
-            bool isManager =await _unitOfWork.IdentityRepository.IsManager(userMail,hotel);
-            if (isManager) {
+            bool isManager = await _unitOfWork.IdentityRepository.IsManager(userMail, hotel);
+            if (isManager)
+            {
                 var reservations = await _unitOfWork.Reservations.GetReservationsByHotelIdAsync(hotel);
+
+                // Filtreleme işlemi
+                if (!string.IsNullOrEmpty(status))
+                {
+                    if (Enum.TryParse(status, out ReservationStatus parsedStatus))
+                    {
+                        reservations = reservations.Where(x => x.Status == parsedStatus).ToList();
+                    }
+                }
+
+                // Arama işlemi
+                if (reservationNumber.HasValue)
+                {
+                    reservations = reservations.Where(x => x.ReservationNumber == reservationNumber.Value).ToList();
+                }
 
                 var reservationDtos = reservations.Select(x => new ReservationExtendedDetails
                 {
+                    HotelId = x.Room.RoomType.HotelId,
                     HotelName = x.Room.RoomType.Hotel.Name,
                     RoomName = x.Room.RoomType.Name,
                     RoomTypePictue = x.Room.RoomType.Picture,
@@ -113,13 +132,17 @@ namespace HotelBookingApp.Core.Application.Services
                         UserName = x.User.UserName,
                         Status = x.Status,
                     }
-
-                }
-                ).ToList();
+                }).ToList();
 
                 return ServiceResult<List<ReservationExtendedDetails>>.SuccessResult(reservationDtos);
             }
-            return ServiceResult<List<ReservationExtendedDetails>>.FailureResult("başarısız",HttpStatusCode.NoContent);
+            return ServiceResult<List<ReservationExtendedDetails>>.FailureResult("başarısız", HttpStatusCode.NoContent);
+        }
+
+        public async Task<ServiceResult<bool>> ChangeReservationStatusAsync(Guid reservaitonId,ReservationStatus status)
+        {
+            var result = await _unitOfWork.Reservations.ChangeReservationStatusAsync(reservaitonId, status);
+            return ServiceResult<bool>.SuccessResult(result);
         }
     }
 }

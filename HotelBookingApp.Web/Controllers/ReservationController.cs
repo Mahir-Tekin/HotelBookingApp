@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static HotelBookingApp.Core.Application.Enums.CoreLayerEnums;
 
 namespace HotelBookingApp.Web.Controllers
 {
@@ -50,12 +51,23 @@ namespace HotelBookingApp.Web.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> GetHotelReservations(Guid Hotel)
+        public async Task<IActionResult> GetHotelReservations(Guid Hotel, string? status = null, int? reservationNumber = null)
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
             if (email == null) { return View(); }
-            var result = await _reservationService.GetHotelReservations(email, Hotel);
+
+            ViewBag.HotelId = Hotel; // Hotel bilgisi View'a aktarılıyor.
+            var result = await _reservationService.GetHotelReservations(email, Hotel, status, reservationNumber);
             return View(result.Data);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> ChangeReservationStatus(Guid hotel,Guid reservationId,ReservationStatus status)
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (email == null) { return View(); }
+            var response =await _reservationService.ChangeReservationStatusAsync(reservationId, status);
+            return RedirectToAction("GetHotelReservations",new {hotel});
         }
     }
 }
