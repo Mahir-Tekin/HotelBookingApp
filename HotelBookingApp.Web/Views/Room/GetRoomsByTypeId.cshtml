@@ -7,8 +7,10 @@
         @TempData["ErrorMessage"]
     </div>
 }
-
-@foreach (var room in Model)
+else
 {
-    <span>@room.RoomNumber</span>
+    @foreach (var room in Model!)
+    {
+        <span>@room.RoomNumber</span>
+    }
 }

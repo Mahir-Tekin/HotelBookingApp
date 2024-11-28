@@ -11,6 +11,8 @@ namespace HotelBookingApp.Infrastructure.Persistence
         public DbSet<Hotel> Hotels { get; set; }
         public DbSet<RoomType> RoomTypes { get; set; }
         public DbSet<HotelAmenity> HotelAmenities { get; set; }
+        public DbSet<Room> Rooms { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -19,11 +21,13 @@ namespace HotelBookingApp.Infrastructure.Persistence
             modelBuilder.ApplyConfiguration(new RoomTypeConfiguration());
             modelBuilder.ApplyConfiguration(new HotelAmenityConfiguration());
             modelBuilder.ApplyConfiguration(new RoomConfiguration());
+            modelBuilder.ApplyConfiguration(new ReservationConfiguration());
 
             modelBuilder.Entity<IdentityRole>().HasData(
                 new IdentityRole { Name = "Admin", NormalizedName = "ADMIN" },
                 new IdentityRole { Name = "HotelAdmin", NormalizedName = "HOTELADMIN" },
-                new IdentityRole { Name = "Manager", NormalizedName = "MANAGER" }
+                new IdentityRole { Name = "Manager", NormalizedName = "MANAGER" },
+                new IdentityRole { Name = "User", NormalizedName = "USER" }
              );
             modelBuilder.Entity<HotelAmenity>().HasData(
                 new HotelAmenity { Id = Guid.NewGuid(), Name = "Free Wi-Fi", IconClass = "bi bi-wifi" },

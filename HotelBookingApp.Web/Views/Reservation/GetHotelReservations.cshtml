@@ -1,0 +1,48 @@
+﻿@model List<ReservationExtendedDetails>
+
+@{
+    ViewBag.Title = "Reservation List";
+}
+
+<h2>Reservation List</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Room Name</th>
+            <th>Room Picture</th>
+            <th>Reservation Number</th>
+            <th>Room Number</th>
+            <th>Guest Name</th>
+            <th>Check-in Date</th>
+            <th>Check-out Date</th>
+            <th>Paid Price</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reservation in Model)
+        {
+            <tr>
+                <td>@reservation.RoomName</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(reservation.RoomTypePictue))
+                    {
+                        <img src="@Url.Content($"~/images/{reservation.RoomTypePictue}")" alt="Room Picture" style="width:100px; height:auto;" />
+                    }
+                    else
+                    {
+                        <span>No Picture</span>
+                    }
+                </td>
+                <td>@reservation.Reservation.ReservationNumber</td>
+                <td>@reservation.Reservation.RoomNumber</td>
+                <td>@reservation.Reservation.GuestName</td>
+                <td>@reservation.Reservation.CheckInDate?.ToString("yyyy-MM-dd")</td>
+                <td>@reservation.Reservation.CheckOutDate?.ToString("yyyy-MM-dd")</td>
+                <td>@reservation.Reservation.PaidPrice?.ToString("C")</td>
+                <td>@reservation.Reservation.Status?.ToString()</td>
+            </tr>
+        }
+    </tbody>
+</table>

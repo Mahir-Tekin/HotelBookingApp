@@ -4,6 +4,7 @@ using HotelBookingApp.Core.Application.Services;
 using HotelBookingApp.Core.Domain.Entities;
 using HotelBookingApp.Infrastructure.Persistence;
 using HotelBookingApp.Infrastructure.Repositories;
+using HotelBookingApp.Infrastructure.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -40,6 +41,9 @@ namespace HotelBookingApp.Infrastructure.Extensions
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IRoomAmenityService, RoomAmenityService>();
             services.AddScoped<IRoomService, RoomService>();
+            services.AddScoped<IRoomRepository,RoomRepository>();
+            services.AddScoped<IReservationRepository, ReservationRepository>();
+            services.AddScoped<IReservationService, ReservationService>();
 
 
             return services;

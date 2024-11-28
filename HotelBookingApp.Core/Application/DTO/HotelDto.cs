@@ -17,8 +17,11 @@ namespace HotelBookingApp.Core.Application.DTO
         public int? RoomCount { get; set; }
         public string? Description { get; set; }
         public string? Picture { get; set; }
-
-        public ICollection<AmenityDto> HotelAmenities { get; set; } = new List<AmenityDto>();
+        public decimal? MinPrice { get; set; }
+        public bool? IsDateFiltered { get; set; } = false;
+        public int? StayDuration { get; set; }
+        public List<AmenityDto> HotelAmenities { get; set; } = new List<AmenityDto>();
+        public List<RoomTypeDto> RoomTypes { get; set; } = new List<RoomTypeDto>();
     }
 
 }

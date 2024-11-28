@@ -12,7 +12,7 @@ namespace HotelBookingApp.Core.Application.DTO
         public string? Picture { get; set; }
         public IFormFile? newPicture { get; set; }
         public Guid HotelId { get; set; }
-
-        public List<AmenityDto> Amenities { get; set; }
+        public decimal Price { get; set; }
+        public List<AmenityDto> Amenities { get; set; } = new List<AmenityDto>();
     }
 }

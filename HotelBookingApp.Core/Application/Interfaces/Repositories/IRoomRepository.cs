@@ -9,6 +9,6 @@ namespace HotelBookingApp.Core.Application.Interfaces.Repositories
 {
     public interface IRoomRepository : IRepository<Room>
     {
-
+        Task<Room> GetFirstAvailableRoom(Guid roomTypeId, DateTime checkInDate, DateTime checkOutDate);
     }
 }

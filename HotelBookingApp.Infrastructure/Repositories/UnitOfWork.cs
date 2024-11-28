@@ -1,9 +1,10 @@
 ﻿using HotelBookingApp.Core.Application.Interfaces.Repositories;
+using HotelBookingApp.Core.Domain.Entities;
 using HotelBookingApp.Infrastructure.Persistence;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HotelBookingApp.Infrastructure.Repositories
+namespace HotelBookingApp.Infrastructure.Repository
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -12,12 +13,18 @@ namespace HotelBookingApp.Infrastructure.Repositories
 
         public IHotelRepository Hotels { get; }
         public IRoomTypeRepository RoomTypes { get; }
+        public IRoomRepository Rooms { get; }
+        public IReservationRepository Reservations { get; }
+        public IIdentityRepository IdentityRepository { get; }
 
-        public UnitOfWork(AppDbContext context, IHotelRepository hotelRepository, IRoomTypeRepository roomTypeRepository)
+        public UnitOfWork(AppDbContext context, IHotelRepository hotelRepository, IRoomTypeRepository roomTypeRepository, IRoomRepository roomRepository, IReservationRepository reservationRepository, IIdentityRepository ıdentity)
         {
             _context = context;
             Hotels = hotelRepository;
             RoomTypes = roomTypeRepository;
+            Rooms = roomRepository;
+            Reservations = reservationRepository;
+            IdentityRepository = ıdentity;    
         }
 
         public void Attach<TEntity>(TEntity entity) where TEntity : class

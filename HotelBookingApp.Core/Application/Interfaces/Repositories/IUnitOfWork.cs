@@ -7,8 +7,10 @@ namespace HotelBookingApp.Core.Application.Interfaces.Repositories
     {
         IHotelRepository Hotels { get; }
         IRoomTypeRepository RoomTypes { get; }
-
+        IReservationRepository Reservations { get; }
+        IRoomRepository Rooms { get; }
         IRepository<T> Repository<T>() where T : class;
+        IIdentityRepository IdentityRepository { get; }
 
         void Attach<TEntity>(TEntity entity) where TEntity : class;
 

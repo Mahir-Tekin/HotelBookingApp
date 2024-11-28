@@ -1,0 +1,327 @@
+﻿@model HotelDetailsVM
+
+<div class="container mt-6">
+    <!-- Otelin Genel Bilgilerini İçeren Büyük Kart -->
+    <div class="hotel-info-card d-flex mb-4 p-4 position-relative">
+        <!-- Sağ Üst Köşede Butonlar -->
+        <div class="card-buttons-right">
+            <a asp-controller="RoomType" asp-action="Create" asp-route-id="@Model.Hotel.Id"  class="btn-action">Add Room</a>
+            <a asp-controller="Hotel" asp-action="Edit" asp-route-id="@Model.Hotel.Id" class="btn-action">Edit</a>
+            <a asp-controller="Hotel" asp-action="DeleteConfirmed" asp-route-id="@Model.Hotel.Id" class="btn-action">Delete</a>
+            <a asp-controller="Hotel" asp-action="HotelAdmins" asp-route-hotel="@Model.Hotel.Id" class="btn-action">Manage Admins</a>
+            <a asp-controller="Reservation" asp-action="GetHotelReservations" asp-route-hotel="@Model.Hotel.Id" class="btn-action">Manage Reservations</a>
+        </div>
+
+        <!-- Sol Taraf: Otel Fotoğrafı -->
+        <div class="hotel-info-image">
+            <img src="/hotelpictures/@Model.Hotel.Picture" alt="Hotel Picture">
+        </div>
+
+        <!-- Sağ Taraf: Otel Bilgileri -->
+        <div class="hotel-info-details flex-grow-1 mx-4">
+            <!-- Otel İsmi -->
+            <h2 class="hotel-name">@Model.Hotel.Name</h2>
+
+            <!-- Otel Adresi -->
+            <p class="hotel-address">@Model.Hotel.Address</p>
+
+            <!-- Otel Açıklaması -->
+            <p class="hotel-description">
+                @Model.Hotel.Description
+            </p>
+
+            <!-- Olanaklar (Amenities) -->
+            <div class="amenities mt-2">
+                @foreach (var amenity in Model.Hotel.HotelAmenities)
+                {
+                    <span class="amenity"><i class="@amenity.IconClass">@amenity.Name</i></span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Filtreleme Çubuğu -->
+<form id="filterForm" >
+    <div class="filter-bar p-4 mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-3">
+                <label for="checkin" class="form-label text-white">Check-in Date</label>
+                <input type="date" class="form-control date-input" value="@Model.Filter.CheckInDate?.ToString("yyyy-MM-dd")" id="checkin" name="@nameof(RoomTypeFilterRequest.CheckInDate)">
+            </div>
+            <div class="col-md-3">
+                <label for="checkout" class="form-label text-white">Check-out Date</label>
+                <input type="date" class="form-control date-input" id="checkout" value="@Model.Filter.CheckOutDate?.ToString("yyyy-MM-dd")" name="@nameof(RoomTypeFilterRequest.CheckOutDate)" >
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary mt-3" onclick="filterRooms()">Filter</button>
+</form>
+
+
+<div id="RoomTypeListContainer" >
+
+</div>
+
+<div class="modal fade" id="reservationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Header -->
+            <div class="modal-header">
+                <h5 class="modal-title">Rezervasyon Detayları</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- Body -->
+            <div class="modal-body">
+                <!-- Oda Bilgileri -->
+                <div id="reservationRoomDetails" class="mb-3">
+                    <h6>Oda Bilgileri</h6>
+                    <p><strong>Oda Adı:</strong> <span id="roomName"></span></p>
+                    <p><strong>Kapasite:</strong> <span id="roomCapacity"></span></p>
+                    <p><strong>Açıklama:</strong> <span id="roomDescription"></span></p>
+                </div>
+
+                <!-- Konaklama Bilgileri -->
+                <div id="reservationStayDetails" class="mb-3">
+                    <h6>Konaklama Bilgileri</h6>
+                    <p><strong>Giriş Tarihi:</strong> <span id="checkInDate"></span></p>
+                    <p><strong>Çıkış Tarihi:</strong> <span id="checkOutDate"></span></p>
+                    <p><strong>Toplam Gece:</strong> <span id="stayDuration"></span></p>
+                    <p><strong>Toplam Fiyat:</strong> <span id="totalPrice"></span></p>
+                </div>
+
+                <!-- Olanaklar -->
+                <div id="reservationAmenities" class="mb-3">
+                    <h6>Olanaklar</h6>
+                    <ul id="amenitiesList">
+                        <!-- JavaScript ile doldurulacak -->
+                    </ul>
+                </div>
+
+                <!-- Oda Görseli -->
+                <div id="reservationImageContainer" class="text-center">
+                    <img id="reservationImage" src="" alt="Room Image" style="width: 100%; height: auto; max-height: 300px; object-fit: cover;">
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Kapat</button>
+                <button type="button" class="btn btn-primary" onclick="confirmReservation()">Rezervasyonu Onayla</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const hotelId = "@Model.Hotel.Id";
+        const modalElement = document.getElementById('reservationModal');
+
+        modalElement.addEventListener('hidden.bs.modal', () => {
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        });
+
+        async function filterRooms() {
+            const form = document.getElementById("filterForm");
+            const formData = new FormData(form);
+
+            let filterData = Object.fromEntries(formData.entries());
+            for (let key in filterData) {
+                if (filterData[key] === "") {
+                    filterData[key] = null;
+                }
+            }
+
+            try {
+                const response = await fetch(`/RoomType/HotelRooms/${hotelId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(filterData)
+                });
+
+                if (!response.ok) {
+                    const errorMessage = await response.text();
+                    throw new Error(errorMessage);
+                }
+
+                const htmlContent = await response.text();
+                document.getElementById("RoomTypeListContainer").innerHTML = htmlContent;
+
+            } catch (error) {
+                console.error('Error fetching rooms:', error);
+                document.getElementById("RoomTypeListContainer").innerHTML = `
+                    <div class="alert alert-danger">Error: ${error.message}</div>
+                `;
+            }
+        };
+        function loadReservationDetails(roomId) {
+            // 1. Oda Kartını Seç
+            const roomCard = document.querySelector(`[data-room-id="${roomId}"]`);
+            if (!roomCard) {
+                console.error(`Room card with ID ${roomId} not found.`);
+                return;
+            }
+
+            // 2. Tarih Bilgilerini Al
+            const checkInDate = document.querySelector('input[name="checkindate"]').value;
+            const checkOutDate = document.querySelector('input[name="checkoutdate"]').value;
+
+            // 3. Oda Bilgilerini DOM'dan Çek
+            const roomImage = roomCard.querySelector('.room-image img').src;
+            const roomName = roomCard.querySelector('.room-name').innerText;
+            const roomCapacity = roomCard.querySelector('.room-capacity').innerText;
+            const roomDescription = roomCard.querySelector('.room-description').innerText;
+            const priceInfo = roomCard.querySelector('.price-amount').innerText;
+
+            // 4. Olanakları (Amenities) Al
+            const amenities = Array.from(roomCard.querySelectorAll('.amenities .amenity'))
+                .map(el => el.innerText.trim());
+
+            // 5. Konaklama Süresini Hesapla
+            const stayDuration = calculateStayDuration(checkInDate, checkOutDate);
+
+            // 6. Modal Alanlarını Güncelle
+            document.getElementById('roomName').innerText = roomName;
+            document.getElementById('roomCapacity').innerText = roomCapacity;
+            document.getElementById('roomDescription').innerText = roomDescription;
+            document.getElementById('checkInDate').innerText = formatDate(checkInDate);
+            document.getElementById('checkInDate').setAttribute('data-original-date', checkInDate);
+            document.getElementById('checkOutDate').innerText = formatDate(checkOutDate);
+            document.getElementById('checkOutDate').setAttribute('data-original-date', checkOutDate);
+            document.getElementById('stayDuration').innerText = `${stayDuration} Gece`;
+            document.getElementById('totalPrice').innerText = priceInfo;
+
+            // 7. Amenity Listesini Güncelle
+            const amenitiesList = document.getElementById('amenitiesList');
+            amenitiesList.innerHTML = ''; // Önceki içeriği temizle
+            amenities.forEach(amenity => {
+                const li = document.createElement('li');
+                li.innerText = amenity;
+                amenitiesList.appendChild(li);
+            });
+
+            // 8. Görseli Güncelle
+            const modalImage = document.getElementById('reservationImage');
+            modalImage.src = roomImage;
+
+            // 9. RoomTypeId'yi Modal'a Ekleyin
+            const reservationModal = document.getElementById('reservationModal');
+            reservationModal.setAttribute('data-room-id', roomId);
+
+            // 10. Modal'ı Aç
+            const modalInstance = new bootstrap.Modal(reservationModal);
+            modalInstance.show();
+        }
+
+        // Tarihler Arasındaki Gece Sayısını Hesaplayan Yardımcı Fonksiyon
+        function calculateStayDuration(checkIn, checkOut) {
+            const checkInDate = new Date(checkIn);
+            const checkOutDate = new Date(checkOut);
+            const differenceInTime = checkOutDate - checkInDate;
+            const differenceInDays = differenceInTime / (1000 * 3600 * 24); // Milisaniyeyi güne çevir
+            return Math.max(1, Math.round(differenceInDays)); // Minimum 1 gece
+        }
+
+        // Tarih Formatını Kullanıcı Dostu Hale Getiren Yardımcı Fonksiyon
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('tr-TR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+        }
+
+
+        // Tarihler Arasındaki Gece Sayısını Hesaplayan Yardımcı Fonksiyon
+        function calculateStayDuration(checkIn, checkOut) {
+            const checkInDate = new Date(checkIn);
+            const checkOutDate = new Date(checkOut);
+            const differenceInTime = checkOutDate - checkInDate;
+            const differenceInDays = differenceInTime / (1000 * 3600 * 24); // Milisaniyeyi güne çevir
+            return Math.max(1, Math.round(differenceInDays)); // Minimum 1 gece
+        }
+
+        async function confirmReservation() {
+            // 1. Modal'dan Gerekli Bilgileri Al
+            const roomTypeId = document.getElementById('reservationModal').getAttribute('data-room-id'); // Modal'dan oda türü ID'si
+            const paidPrice = parseFloat(document.getElementById('totalPrice').innerText.replace(/[^0-9.,]/g, '').replace(',', '.')); // Sadece sayılar
+            console.log(paidPrice);
+            const checkInDate = document.getElementById('checkInDate').getAttribute('data-original-date');
+            const checkOutDate = document.getElementById('checkOutDate').getAttribute('data-original-date');
+
+            if (!roomTypeId || !checkInDate || !checkOutDate) {
+                alert("Rezervasyon için gerekli bilgiler eksik!");
+                return;
+            }
+
+            // Tarihlerin geçerli olup olmadığını kontrol et
+            const checkInDateObj = new Date(checkInDate);
+            const checkOutDateObj = new Date(checkOutDate);
+            if (isNaN(checkInDateObj) || isNaN(checkOutDateObj)) {
+                alert("Geçerli bir giriş ve çıkış tarihi giriniz!");
+                return;
+            }
+
+            // 2. `CreateReservationRequest` Formatında Veri Hazırla
+            const reservationData = {
+                RoomTypeId: roomTypeId,
+                PaidPrice: parseFloat(paidPrice),
+                PaidDate: new Date().toISOString(),
+                CheckInDate: checkInDateObj.toISOString(),
+                CheckOutDate: checkOutDateObj.toISOString()
+            };
+
+            try {
+                // 3. Fetch İsteği Gönder
+                const response = await fetch('/Reservation/CreateReservation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(reservationData)
+                });
+
+                // 4. Yanıtı Yönet
+                if (response.status === 401) {
+                    // Kullanıcı giriş yapmamışsa
+                    alert('Rezervasyon yapabilmek için giriş yapmalısınız.');
+                    window.location.href = '/Account/Login'; // Login sayfasına yönlendirme
+                } else if (response.ok) {
+                    // Başarılı rezervasyon
+                    const htmlContent = await response.text();
+                    document.getElementById('reservationModal').innerHTML = htmlContent;
+                    const modalInstance = new bootstrap.Modal(document.getElementById('reservationModal'));
+                    modalInstance.show();
+                } else {
+                    // Hata durumu
+                    const errorMessage = await response.text();
+                    alert(`Rezervasyon başarısız: ${errorMessage}`);
+                }
+            } catch (error) {
+                console.error('Rezervasyon işlemi sırasında hata:', error);
+                alert('Bir hata oluştu. Lütfen tekrar deneyiniz.');
+            }
+        }
+
+
+
+
+        // Tarih Formatını Kullanıcı Dostu Hale Getiren Yardımcı Fonksiyon
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('tr-TR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            filterRooms();
+        });
+    </script>
+}

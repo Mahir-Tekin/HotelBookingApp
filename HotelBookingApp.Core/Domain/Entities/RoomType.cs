@@ -9,7 +9,7 @@ namespace HotelBookingApp.Core.Domain.Entities
         public string Name { get; set; } = default!;
         public string? Description { get; set; }
         public int Capacity { get; set; }
-
+        public decimal Price { get; set; }
 
         public Guid HotelId { get; set; }
         public Hotel Hotel { get; set; } = default!;

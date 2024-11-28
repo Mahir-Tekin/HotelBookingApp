@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.Net;
-using System.Threading.Tasks;
 using HotelBookingApp.Core.Application.DTO;
 using HotelBookingApp.Core.Application.Interfaces.IServices;
 using HotelBookingApp.Core.Application.Interfaces.Repositories;
@@ -22,13 +20,14 @@ namespace HotelBookingApp.Core.Application.Services
             _fileProvider = fileProvider;
         }
 
-        public async Task<ServiceResult<List<RoomTypeDto>>> GetRoomTypesByHotelIdAsync(Guid hotelId)
+        public async Task<ServiceResult<List<RoomTypeDto>>> GetRoomTypesByHotelIdAsync(Guid hotelId,RoomTypeFilterRequest? filter)
         {
             var roomTypes = await _unitOfWork.RoomTypes.GetRoomTypesByHotelIdAsync(hotelId);
             if (!roomTypes.Any())
             {
                 return ServiceResult<List<RoomTypeDto>>.FailureResult("No room types found for the specified hotel.", HttpStatusCode.NotFound);
             }
+            bool isDateFiltered = filter?.CheckInDate.HasValue==true && filter?.CheckOutDate.HasValue ==true;
 
             var roomTypeDtos = roomTypes.Select(rt => new RoomTypeDto
             {
@@ -38,6 +37,9 @@ namespace HotelBookingApp.Core.Application.Services
                 Capacity = rt.Capacity,
                 HotelId = rt.HotelId,
                 Picture = rt.Picture,
+                StayDuration = isDateFiltered ? (int)(filter!.CheckOutDate!.Value - filter.CheckInDate!.Value).TotalDays : null,
+                TotalPrice = isDateFiltered ? (int)(filter!.CheckOutDate!.Value - filter.CheckInDate!.Value).TotalDays * rt.Price : null,
+                Status = CheckStatus(rt.Rooms, filter?.CheckInDate, filter?.CheckOutDate),
                 roomAmenities = rt.Amenities.Select(x => new RoomAmenityDto
                 {
                     Name = x.Name,
@@ -50,7 +52,17 @@ namespace HotelBookingApp.Core.Application.Services
         }
 
 
+        private RoomStatus CheckStatus(IEnumerable<Room> rooms, DateTime? checkInDate, DateTime? checkOutDate)
+        {
+            if (!checkInDate.HasValue || !checkOutDate.HasValue)
+            {
+                return RoomStatus.DateNotFiltered;
+            }
+            bool isavailable = rooms.Any(r => r.Reservations.All(rs => rs.CheckInDate > checkOutDate || rs.CheckOutDate < checkInDate));
 
+            if (isavailable) return RoomStatus.Available;
+            return RoomStatus.Full;
+        }
         // Tek bir oda türü bilgisi getirme
         public async Task<ServiceResult<RoomTypeDto>> GetRoomTypeByIdAsync(Guid id)
         {
@@ -101,6 +113,7 @@ namespace HotelBookingApp.Core.Application.Services
                 Name = request.Name,
                 Description = request.Description,
                 Capacity = request.Capacity,
+                Price = request.Price,
                 HotelId = request.HotelId
             };
 
@@ -149,7 +162,9 @@ namespace HotelBookingApp.Core.Application.Services
                 Description = roomType.Description,
                 Capacity = roomType.Capacity,
                 HotelId = roomType.HotelId,
-                Picture = roomType.Picture
+                Picture = roomType.Picture,
+                Price = roomType.Price,
+                
             };
 
             // Oda türünün mevcut olanaklarını seçili olarak ayarlama
@@ -195,6 +210,7 @@ namespace HotelBookingApp.Core.Application.Services
             roomType.Name = request.Name;
             roomType.Description = request.Description;
             roomType.Capacity = request.Capacity;
+            roomType.Price = request.Price;
             roomType.HotelId = request.HotelId;
 
             if (request.newPicture != null && request.newPicture.Length > 0)
@@ -215,7 +231,7 @@ namespace HotelBookingApp.Core.Application.Services
                         File.Delete(oldPicturePath);
                     }
                 }
-
+                
                 // Yeni fotoğrafın adıyla dosya oluştur
                 string newFileName = $"{Guid.NewGuid()}{Path.GetExtension(request.newPicture.FileName)}";
                 var newPicturePath = Path.Combine(uploadsFolder, newFileName);
@@ -226,7 +242,18 @@ namespace HotelBookingApp.Core.Application.Services
 
                 roomType.Picture = newFileName; // Yeni dosya adını güncelle
             }
-
+            var selectedAmenities = request.Amenities.Where(x => x.IsChecked).Select(x => new RoomAmenity { Id = x.Id }).ToList();
+            var newAmenities = selectedAmenities.Where(a => !roomType.Amenities.Any(ra => ra.Id == a.Id)).ToList();
+            var oldAmenities = roomType.Amenities.Where(a => !selectedAmenities.Any(sa => sa.Id == a.Id)).ToList();
+            foreach (var oldAmenity in oldAmenities)
+            {
+                roomType.Amenities.Remove(oldAmenity);
+            }
+            foreach (var newAmenity in newAmenities)
+            {
+                _unitOfWork.Attach(newAmenity);
+                roomType.Amenities.Add(newAmenity);
+            }
 
             _unitOfWork.RoomTypes.Update(roomType);
             await _unitOfWork.CompleteAsync();

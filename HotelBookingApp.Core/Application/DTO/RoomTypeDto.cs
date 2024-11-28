@@ -10,7 +10,17 @@ namespace HotelBookingApp.Core.Application.DTO
         public int Capacity { get; set; }
         public string? Picture { get; set; }
         public Guid HotelId { get; set; }
-
+        public decimal? TotalPrice { get; set; }
+        public int? StayDuration { get; set; }
+        public RoomStatus Status { get; set; } = RoomStatus.DateNotFiltered;
         public List<RoomAmenityDto> roomAmenities { get; set; } = new List<RoomAmenityDto>();
+    }
+
+    public enum RoomStatus
+    {
+        DateNotFiltered,
+        Available,
+        Full,
+        Maintenance
     }
 }

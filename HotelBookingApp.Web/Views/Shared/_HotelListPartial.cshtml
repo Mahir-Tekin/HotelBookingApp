@@ -1,0 +1,51 @@
+﻿@model HotelIndexVM
+
+<div class="container mt-4">
+    @foreach (var hotel in Model.Hotels)
+    {
+        <div class="hotel-card d-flex align-items-center mb-4 p-3">
+            <!-- Sol Tarafta Otel Resmi -->
+            <div class="hotel-image">
+                <img src="/hotelpictures/@hotel.Picture" alt="Hotel Picture">
+            </div>
+
+            <!-- Orta Tarafta Otel Bilgileri -->
+            <div class="hotel-details flex-grow-1 mx-3">
+                <h3 class="hotel-name">@hotel.Name</h3>
+                <p class="hotel-location"><i class="fa fa-map-marker"></i>@hotel.Address</p>
+                <p class="hotel-rating">
+                    <span>
+                        @for (int i = 0; i < hotel.StarRating; i++)
+                        {
+                            <i class="bi bi-star"></i>
+                        }
+                    </span>
+                </p>
+                <div class="amenities mt-2">
+                    @foreach (var amenity in hotel.HotelAmenities)
+                    {
+                        <span class="amenity"> <i class="@amenity.IconClass"></i> @amenity.Name</span>
+                    }
+                </div>
+            </div>
+
+            <div class="hotel-action text-end">
+                @if (!(hotel.IsDateFiltered ?? false))
+                {
+                    <p class="price-info">Fiyatlar için tarih girin!</p>
+                    <button class="btn btn-outline-primary mb-2">Tarih Seçin</button>
+                }
+                else
+                {
+                    <p class="price-info">@hotel.StayDuration gece için </p>
+                    <button class="btn btn-outline-primary mb-2">@hotel.MinPrice</button>
+                }
+                <a asp-action="Details" 
+                    asp-route-id="@hotel.Id"
+                    asp-route-checkindate="@Model.Filter?.CheckInDate?.ToString("yyyy-MM-dd")"
+                    asp-route-checkoutdate="@Model.Filter?.CheckOutDate?.ToString("yyyy-MM-dd")"
+                class="view-hotel-link">Oteli İncele &rarr;</a>
+            </div>
+        </div>
+    }
+</div>

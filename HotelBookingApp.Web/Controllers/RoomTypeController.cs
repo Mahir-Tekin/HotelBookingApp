@@ -1,5 +1,6 @@
 ﻿using HotelBookingApp.Core.Application.DTO;
 using HotelBookingApp.Core.Application.Interfaces.IServices;
+using HotelBookingApp.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -14,17 +15,25 @@ namespace HotelBookingApp.Web.Controllers
             _roomTypeService = roomTypeService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Rooms(Guid Id)
+        [HttpPost]
+        public async Task<IActionResult> HotelRooms(Guid Id, [FromBody] RoomTypeFilterRequest? filter)
         {
-            var result = await _roomTypeService.GetRoomTypesByHotelIdAsync(Id);
-            if (!result.Success)
+            if (filter == null)
             {
-                TempData["ErrorMessage"] = result.ErrorMessage;
-                return RedirectToAction("Error"); 
+                filter = new RoomTypeFilterRequest();
             }
 
-            return View(result.Data); 
+            var result = await _roomTypeService.GetRoomTypesByHotelIdAsync(Id, filter);
+            if (!result.Success)
+            {
+                return StatusCode(400, result.ErrorMessage); // Hata mesajını döndür
+            }
+            var response = new RoomTypeListVM
+            {
+                Filter = filter,
+                RoomTypeList = result.Data
+            };
+            return PartialView("_RoomTypeListPartial", response); // PartialView döndür
         }
 
         // Tek bir oda türünün detaylarını görüntüleme (Details View)
@@ -48,7 +57,7 @@ namespace HotelBookingApp.Web.Controllers
             if (!response.Success)
             {
                 TempData["ErrorMessage"] = response.ErrorMessage;
-                return RedirectToAction("Index");
+                return RedirectToAction("Hotel","Details",new {id = id});
             }
             return View(response.Data);
         }
@@ -70,7 +79,7 @@ namespace HotelBookingApp.Web.Controllers
                 return View(request);
             }
 
-            return RedirectToAction("Rooms");
+            return RedirectToAction("Hotel", "Details", new { id = request.HotelId });
         }
 
         // Oda türü güncelleme sayfasını görüntüleme (Edit View)

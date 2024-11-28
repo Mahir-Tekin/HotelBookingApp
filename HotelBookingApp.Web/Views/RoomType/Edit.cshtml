@@ -1,7 +1,7 @@
 ﻿@model RoomTypeUpdateRequest
 
 @{
-    ViewBag.Title = "Create Room Type";
+    ViewBag.Title = "Update";
 }
 
 <h2>Create Room Type</h2>
@@ -37,7 +37,11 @@
         <input asp-for="Capacity" class="form-control" type="number" />
         <span asp-validation-for="Capacity" class="text-danger"></span>
     </div>
-
+    <div class="form-group">
+        <label asp-for="Price" class="control-label"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
     <!-- Hotel ID (Hidden) -->
     <input asp-for="HotelId" type="hidden" />
 

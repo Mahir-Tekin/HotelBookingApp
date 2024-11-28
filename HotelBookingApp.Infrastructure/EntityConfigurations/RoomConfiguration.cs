@@ -16,6 +16,10 @@ namespace HotelBookingApp.Infrastructure.EntityConfigurations
             builder.Property(x => x.RoomNumber).IsRequired().HasMaxLength(10);
 
             builder.HasOne(x => x.RoomType).WithMany(t => t.Rooms).HasForeignKey(x => x.RoomTypeId);
+
+            builder.HasMany(r => r.Reservations)
+               .WithOne(res => res.Room)
+               .HasForeignKey(res => res.RoomId);
         }
     }
 }

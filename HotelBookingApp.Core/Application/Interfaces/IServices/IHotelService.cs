@@ -13,6 +13,7 @@ namespace HotelBookingApp.Core.Application.Interfaces.IServices
         Task<ServiceResult<bool>> UpdateHotelAsync(Guid id, UpdateHotelRequest request);
         Task<ServiceResult<bool>> DeleteHotelAsync(Guid id);
         Task<ServiceResult<UpdateHotelRequest>> PrepareUpdateHotelAsync(Guid id);
+        Task<ServiceResult<List<HotelDto>>> GetFilteredHotelsWithAmenityAsync(HotelFilterRequest filter);
 
         // Otel oluşturma işlemi için gerekli olan olanakları sağlayan hazırlık metodu
         Task<ServiceResult<CreateHotelRequest>> PrepareHotelCreationAsync();

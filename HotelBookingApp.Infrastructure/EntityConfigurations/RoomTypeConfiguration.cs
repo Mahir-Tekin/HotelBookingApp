@@ -25,6 +25,10 @@ namespace HotelBookingApp.Infrastructure.EntityConfigurations
             builder.Property(rt => rt.Capacity)
                 .IsRequired(); // Kapasite zorunlu
 
+            builder.Property(rt => rt.Price).IsRequired()
+                .HasPrecision(18,2)
+                .HasDefaultValue(0);
+
             // Relationships
             builder.HasOne(rt => rt.Hotel)
                 .WithMany(h => h.RoomTypes)

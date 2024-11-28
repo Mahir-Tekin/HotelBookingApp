@@ -4,7 +4,7 @@ using HotelBookingApp.Core.Domain.Entities;
 using HotelBookingApp.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace HotelBookingApp.Infrastructure.Repositories
+namespace HotelBookingApp.Infrastructure.Repository
 {
     public class RoomTypeRepository : Repository<RoomType>, IRoomTypeRepository
     {
@@ -20,6 +20,9 @@ namespace HotelBookingApp.Infrastructure.Repositories
         {
             return await _context.RoomTypes
                                  .Where(rt => rt.HotelId == hotelId)
+                                 .Include(rt => rt.Amenities)
+                                 .Include(rt => rt.Rooms)
+                                 .ThenInclude(r => r.Reservations)
                                  .ToListAsync();
         }
     }

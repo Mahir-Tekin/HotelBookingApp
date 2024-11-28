@@ -1,0 +1,75 @@
+﻿@model RoomTypeListVM
+
+<div class="container mt-4">
+    <input type="hidden" name="checkindate" value="@Model.Filter.CheckInDate?.ToString("yyyy-MM-ddTHH:mm:ss")" />
+    <input type="hidden" name="checkoutdate" value="@Model.Filter.CheckOutDate?.ToString("yyyy-MM-ddTHH:mm:ss")" />
+    <!-- Oda Bilgilerini İçeren Kart -->
+    @foreach (var roomtype in Model.RoomTypeList)
+    {
+        <div class="room-card d-flex p-4 mb-4" data-room-id="@roomtype.Id">
+
+            <!-- Sol Tarafta Oda Fotoğrafı -->
+            <div class="room-image">
+                <img src="/roompictures/@roomtype.Picture" alt="Room Picture">
+            </div>
+
+            <!-- Sağ Tarafta Oda Bilgileri -->
+            <div class="room-details flex-grow-1 mx-4 d-flex flex-column justify-content-between">
+                <!-- Oda Adı -->
+                <h3 class="room-name">@roomtype.Name</h3>
+
+                <!-- Kapasite ve Açıklama -->
+                <div class="room-info mt-2">
+                    <p class="room-capacity"><i class="fa fa-user"></i> @roomtype.Capacity Kişilik</p>
+                    <p class="room-description">
+                        @roomtype.Description
+                    </p>
+                </div>
+
+                <!-- Olanaklar (Amenities) -->
+                <div class="amenities mt-2">
+                    @foreach (var amenity in roomtype.roomAmenities)
+                    {
+                        <span class="amenity"><i class="@amenity.IconClass">@amenity.Name</i></span>
+                    }
+                </div>
+
+                <!-- Alt Kısım: Tarih Seç ve Tüm Özellikler -->
+                <div class="room-action d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                        <a asp-action="GetRoomsByTypeId" asp-controller="Room" asp-route-roomTypeId="@roomtype.Id" class="details-link">View all rooms of this type &rarr;</a>
+                        <a asp-action="CreateRoom" asp-controller="Room" asp-route-roomTypeId="@roomtype.Id" class="details-link">Add Rom &rarr;</a>
+                        <a asp-action="Edit" asp-controller="RoomType" asp-route-id="@roomtype.Id" class="details-link">Edit &rarr;</a>
+                    </div>
+                    
+                    @if(roomtype.Status == RoomStatus.DateNotFiltered)
+                    {
+                        <div>
+                             <p class="price-info mb-1">Fiyatlar için tarih giriniz</p>
+                             <button class="btn btn-primary">Tarih Seç</button>
+                        </div>
+                    }
+                    @if(roomtype.Status == RoomStatus.Available)
+                    {
+                        <div>
+                            <p class="price-info mb-1">@roomtype.StayDuration Gece için</p>
+                            <button class="price-amount btn btn-primary">@roomtype.TotalPrice</button>
+                        </div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reservationModal"
+                                onclick="loadReservationDetails('@roomtype.Id')">
+                            Rezervasyon Yap
+                        </button>
+                    }
+                    @if(roomtype.Status == RoomStatus.Full)
+                    {
+                        <div>
+                            <p class="price-info mb-1">Seçilen tarhihlerde boş oda bulunmamakta.</p>
+                            <button class="btn btn-primary">Başka Bir Tarih Seç</button>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    }
+</div>

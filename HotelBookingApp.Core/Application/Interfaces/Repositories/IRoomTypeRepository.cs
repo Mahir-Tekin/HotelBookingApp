@@ -1,4 +1,5 @@
 ﻿
+using HotelBookingApp.Core.Application.DTO;
 using HotelBookingApp.Core.Domain.Entities;
 
 namespace HotelBookingApp.Core.Application.Interfaces.Repositories

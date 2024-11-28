@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelBookingApp.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241105103010_Added_Room_Amenityies")]
-    partial class Added_Room_Amenityies
+    [Migration("20241127235806_ManagedHotelId")]
+    partial class ManagedHotelId
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,6 +58,9 @@ namespace HotelBookingApp.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid?>("ManagedHotelId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -86,6 +89,8 @@ namespace HotelBookingApp.Infrastructure.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ManagedHotelId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -163,76 +168,119 @@ namespace HotelBookingApp.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8980951c-3919-43d8-91b5-46fab173917f"),
+                            Id = new Guid("dfb0a1f4-9f3d-4002-b559-c2b9b1d6be9a"),
                             IconClass = "bi bi-wifi",
                             Name = "Free Wi-Fi"
                         },
                         new
                         {
-                            Id = new Guid("f372202b-a7fb-4ab2-a9a8-7817fd225045"),
+                            Id = new Guid("91eda865-2185-4c67-8b7e-68f4669364ba"),
                             IconClass = "bi bi-car-front",
                             Name = "Parking"
                         },
                         new
                         {
-                            Id = new Guid("cd6a4764-9814-4658-8ecc-8d98ae73b5cd"),
+                            Id = new Guid("cfef2866-5c13-4606-895f-8c83a5c93ab6"),
                             IconClass = "bi bi-water",
                             Name = "Swimming Pool"
                         },
                         new
                         {
-                            Id = new Guid("f31a60c9-579f-4821-932d-359e27fd100b"),
+                            Id = new Guid("715dc1c3-93f4-49c9-9ed0-855e7850336f"),
                             IconClass = "bi bi-bar-chart-line",
                             Name = "Fitness Center"
                         },
                         new
                         {
-                            Id = new Guid("de0ce3ab-0678-4240-8e38-5f1f140b59d6"),
+                            Id = new Guid("fa3fc855-97fa-4b28-ad48-477f49e5c619"),
                             IconClass = "bi bi-shop",
                             Name = "Restaurant"
                         },
                         new
                         {
-                            Id = new Guid("20755e4b-0ca2-47fb-9ac0-f1c54be98646"),
+                            Id = new Guid("6e371b10-36c4-4acc-8574-4a25c146f87a"),
                             IconClass = "bi bi-house-door",
                             Name = "Room Service"
                         },
                         new
                         {
-                            Id = new Guid("cf0eadb6-79c8-45e8-8afb-db18cec48431"),
+                            Id = new Guid("4adebb18-3f42-4634-8b29-ff6fd7c88f3e"),
                             IconClass = "bi bi-basket",
                             Name = "Laundry Service"
                         },
                         new
                         {
-                            Id = new Guid("52ebb947-ad05-40b2-8a33-f01798ffeb60"),
+                            Id = new Guid("45dd9b54-3f2d-456a-a67f-a3b4d8296480"),
                             IconClass = "bi bi-thermometer-sun",
                             Name = "Air Conditioning"
                         },
                         new
                         {
-                            Id = new Guid("6fc5ab98-bf28-4fe0-8f10-4a5582b5adda"),
+                            Id = new Guid("fad2901f-1758-43f5-a075-fc57025586d9"),
                             IconClass = "bi bi-briefcase",
                             Name = "Business Center"
                         },
                         new
                         {
-                            Id = new Guid("fce910b9-d4ce-4434-8e1a-d0d399b45a01"),
+                            Id = new Guid("76ad83e0-2437-4500-a96f-c21df7579c05"),
                             IconClass = "bi bi-megaphone",
                             Name = "Conference Room"
                         },
                         new
                         {
-                            Id = new Guid("a1beb60b-1d41-4b8a-bf5d-583e937d2867"),
+                            Id = new Guid("2fa58e98-7821-46d4-8fec-236172715f02"),
                             IconClass = "bi bi-slash-circle",
                             Name = "Non-Smoking Rooms"
                         },
                         new
                         {
-                            Id = new Guid("8047b725-d1a7-4f9a-b72f-76789d16349b"),
+                            Id = new Guid("cd7bd4fb-7f80-4592-bb35-100821654395"),
                             IconClass = "bi bi-airplane-engines",
                             Name = "Airport Shuttle"
                         });
+                });
+
+            modelBuilder.Entity("HotelBookingApp.Core.Domain.Entities.Reservation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CheckInDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CheckOutDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("PaidDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("PaidPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ReservationNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReservationNumber"));
+
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("Reservations");
                 });
 
             modelBuilder.Entity("HotelBookingApp.Core.Domain.Entities.Room", b =>
@@ -243,7 +291,8 @@ namespace HotelBookingApp.Infrastructure.Migrations
 
                     b.Property<string>("RoomNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<Guid>("RoomTypeId")
                         .HasColumnType("uniqueidentifier");
@@ -252,7 +301,7 @@ namespace HotelBookingApp.Infrastructure.Migrations
 
                     b.HasIndex("RoomTypeId");
 
-                    b.ToTable("Room");
+                    b.ToTable("Rooms", (string)null);
                 });
 
             modelBuilder.Entity("HotelBookingApp.Core.Domain.Entities.RoomAmenity", b =>
@@ -276,91 +325,91 @@ namespace HotelBookingApp.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("e0de1a28-e88b-42af-9971-8a3baa489207"),
+                            Id = new Guid("4ed2f25e-d6e6-4143-ac48-4de0fa43e1a7"),
                             IconClass = "bi bi-tv",
                             Name = "Television"
                         },
                         new
                         {
-                            Id = new Guid("899eb8bf-bf60-4105-a523-c1f267dbf5bf"),
+                            Id = new Guid("19117628-ce65-42af-ad13-f2dad35f5afa"),
                             IconClass = "bi bi-cup-straw",
                             Name = "Mini Bar"
                         },
                         new
                         {
-                            Id = new Guid("5c2bde13-7e77-4844-830d-f006ca79d52d"),
+                            Id = new Guid("58b0f2bc-da72-426b-b615-bd2236906259"),
                             IconClass = "bi bi-cup-hot",
                             Name = "Coffee Maker"
                         },
                         new
                         {
-                            Id = new Guid("30e56da7-50c4-40d8-9632-c5fee69ee92d"),
+                            Id = new Guid("be27da4e-2209-4192-beea-4c699adcfe7d"),
                             IconClass = "bi bi-wind",
                             Name = "Hair Dryer"
                         },
                         new
                         {
-                            Id = new Guid("be768501-89d0-4d3b-82a1-a6b7fd928789"),
+                            Id = new Guid("7151c97d-1dd0-4d17-9fa4-1ab5b84d6f0b"),
                             IconClass = "bi bi-house",
                             Name = "Iron and Ironing Board"
                         },
                         new
                         {
-                            Id = new Guid("465429ed-0024-4d59-89de-a25b85d9e6e2"),
+                            Id = new Guid("dee6bc60-db62-40b1-baa8-fa316512d1b1"),
                             IconClass = "bi bi-safe",
                             Name = "Safe Deposit Box"
                         },
                         new
                         {
-                            Id = new Guid("20f38536-d36a-43ed-a9ee-c836746ec5ef"),
+                            Id = new Guid("76fa436d-f231-42b3-9cf5-f7cb713dc71d"),
                             IconClass = "bi bi-thermometer-sun",
                             Name = "Air Conditioning"
                         },
                         new
                         {
-                            Id = new Guid("0a969e83-6624-4832-8b38-363a3c8e437c"),
+                            Id = new Guid("b066f80c-b6dd-4bee-a628-6a53e6cf2464"),
                             IconClass = "bi bi-table",
                             Name = "Work Desk"
                         },
                         new
                         {
-                            Id = new Guid("57e3ad07-6880-42af-8bc1-4c407cd72b84"),
+                            Id = new Guid("4c245e8b-594e-4c9d-beba-27b997884e25"),
                             IconClass = "bi bi-basket",
                             Name = "Free Toiletries"
                         },
                         new
                         {
-                            Id = new Guid("6cb94d74-ecca-4682-a4ae-739157b20e3c"),
+                            Id = new Guid("dc426314-a039-4d20-889e-1bdbc06d56b2"),
                             IconClass = "bi bi-bell",
                             Name = "Room Service"
                         },
                         new
                         {
-                            Id = new Guid("33fe5392-dd8f-470e-878d-68c26e36db33"),
+                            Id = new Guid("8cad0948-da2d-4a2e-84a7-98b6ae7ac289"),
                             IconClass = "bi bi-patch-check",
                             Name = "Bathrobe and Slippers"
                         },
                         new
                         {
-                            Id = new Guid("aeea7768-ae4e-4178-a5a0-821abeabac35"),
+                            Id = new Guid("e848e3ec-63c3-4e0c-8f75-ecc17f486f99"),
                             IconClass = "bi bi-droplet",
                             Name = "Complimentary Bottled Water"
                         },
                         new
                         {
-                            Id = new Guid("0c4edb96-b534-4c0c-a9e4-cca237054d6f"),
+                            Id = new Guid("981d1e53-e9fd-4d90-86d7-7bd767fbe66a"),
                             IconClass = "bi bi-wifi",
                             Name = "High-Speed Internet"
                         },
                         new
                         {
-                            Id = new Guid("05736782-638f-46d3-b1b6-8d5a0778f7bf"),
+                            Id = new Guid("ae0100d0-6b01-4581-aa98-d2c2b652725e"),
                             IconClass = "bi bi-slash",
                             Name = "Blackout Curtains"
                         },
                         new
                         {
-                            Id = new Guid("e6c3fb6f-12a6-4a7e-8fc8-60b7440935f0"),
+                            Id = new Guid("aec92d51-c0b5-46e5-b6fc-b83470e6b94d"),
                             IconClass = "bi bi-volume-mute",
                             Name = "Soundproof Windows"
                         });
@@ -389,6 +438,12 @@ namespace HotelBookingApp.Infrastructure.Migrations
 
                     b.Property<string>("Picture")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
 
                     b.HasKey("Id");
 
@@ -441,21 +496,27 @@ namespace HotelBookingApp.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "42db8436-53a6-472c-9226-ca7d1392c025",
+                            Id = "557f2011-83be-44dc-a677-f1f0c9eedadf",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "135aee72-c3f1-4fdb-8737-a74971e35751",
+                            Id = "bd7b854e-b8d0-4539-b215-9b274bd9d838",
                             Name = "HotelAdmin",
                             NormalizedName = "HOTELADMIN"
                         },
                         new
                         {
-                            Id = "ee745fae-3731-4cc1-a15e-793560bc0f8e",
+                            Id = "9cc5d918-f1e2-4cc6-b86c-8858ea59801e",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
+                        },
+                        new
+                        {
+                            Id = "d5b9977d-545e-4005-97f8-70259af47a61",
+                            Name = "User",
+                            NormalizedName = "USER"
                         });
                 });
 
@@ -580,6 +641,34 @@ namespace HotelBookingApp.Infrastructure.Migrations
                     b.ToTable("RoomRoomAmenities", (string)null);
                 });
 
+            modelBuilder.Entity("HotelBookingApp.Core.Domain.Entities.ApplicationUser", b =>
+                {
+                    b.HasOne("HotelBookingApp.Core.Domain.Entities.Hotel", "ManagedHotel")
+                        .WithMany()
+                        .HasForeignKey("ManagedHotelId");
+
+                    b.Navigation("ManagedHotel");
+                });
+
+            modelBuilder.Entity("HotelBookingApp.Core.Domain.Entities.Reservation", b =>
+                {
+                    b.HasOne("HotelBookingApp.Core.Domain.Entities.ApplicationUser", "User")
+                        .WithMany("Reservations")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HotelBookingApp.Core.Domain.Entities.Room", "Room")
+                        .WithMany("Reservations")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Room");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("HotelBookingApp.Core.Domain.Entities.Room", b =>
                 {
                     b.HasOne("HotelBookingApp.Core.Domain.Entities.RoomType", "RoomType")
@@ -683,9 +772,19 @@ namespace HotelBookingApp.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("HotelBookingApp.Core.Domain.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("Reservations");
+                });
+
             modelBuilder.Entity("HotelBookingApp.Core.Domain.Entities.Hotel", b =>
                 {
                     b.Navigation("RoomTypes");
+                });
+
+            modelBuilder.Entity("HotelBookingApp.Core.Domain.Entities.Room", b =>
+                {
+                    b.Navigation("Reservations");
                 });
 
             modelBuilder.Entity("HotelBookingApp.Core.Domain.Entities.RoomType", b =>

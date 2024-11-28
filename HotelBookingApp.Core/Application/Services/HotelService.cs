@@ -1,10 +1,12 @@
-﻿using HotelBookingApp.Core.Application;
+﻿
 using HotelBookingApp.Core.Application.Interfaces.Repositories;
 using HotelBookingApp.Core.Application.Interfaces.IServices;
 using HotelBookingApp.Core.Application.DTO;
 using HotelBookingApp.Core.Domain.Entities;
 using System.Net;
 using Microsoft.Extensions.FileProviders;
+using LinqKit;
+
 
 namespace HotelBookingApp.Core.Application.Services
 {
@@ -30,7 +32,68 @@ namespace HotelBookingApp.Core.Application.Services
                 Picture = h.Picture,
                 HotelAmenities = h.Amenities.Select(x => new AmenityDto
                 {
-                    Id=x.Id,
+                    Id = x.Id,
+                    IconClass = x.IconClass,
+                    Name = x.Name,
+                    IsChecked = true,
+                }).ToList()
+            }).ToList();
+
+            return ServiceResult<List<HotelDto>>.SuccessResult(hotelDtos);
+        }
+
+        public async Task<ServiceResult<List<HotelDto>>> GetFilteredHotelsWithAmenityAsync(HotelFilterRequest filter)
+        {
+            var predicate = PredicateBuilder.New<Hotel>(true);
+            bool isDateFiltered = false;
+            // Şehir Filtresi
+            if (!string.IsNullOrEmpty(filter.City))
+            {
+                predicate = predicate.And(h => h.City == filter.City);
+            }
+
+            // Kapasite Filtresi
+            if (filter.GuestCount.HasValue)
+            {
+                predicate = predicate.And(h => h.RoomTypes.Any(rt => rt.Capacity >= filter.GuestCount.Value));
+            }
+
+            // Tarih Filtresi
+            if (filter.CheckInDate.HasValue && filter.CheckOutDate.HasValue)
+            {
+                var checkInDate = filter.CheckInDate.Value;
+                var checkOutDate = filter.CheckOutDate.Value;
+                isDateFiltered = true;
+                predicate = predicate.And(h => h.RoomTypes.Any(rt =>
+                    rt.Rooms.Any(r =>
+                        r.Reservations.All(rs =>
+                            rs.CheckOutDate <= checkInDate || rs.CheckInDate >= checkOutDate))));
+            }
+
+            // Sorguyu Çalıştır
+            var hotels = await _unitOfWork.Hotels.GetFilteredHotelsWithAmenityAsync(predicate);
+            var hotelDtos = hotels.Select(h => new HotelDto
+            {
+                Id = h.Id,
+                Name = h.Name,
+                City = h.City,
+                Address = h.Address,
+                StarRating = h.StarRating,
+                RoomCount = h.RoomCount,
+                Description = h.Description,
+                Picture = h.Picture,
+                StayDuration = isDateFiltered
+                    ? (int)(filter.CheckOutDate!.Value - filter.CheckInDate!.Value).TotalDays : null,
+                MinPrice = isDateFiltered
+                    ? (int)(filter.CheckOutDate!.Value - filter.CheckInDate!.Value).TotalDays *
+                      (h.RoomTypes.Where(rt => rt.Rooms.Any(r =>
+                          r.Reservations.All(rs =>
+                              rs.CheckOutDate < filter.CheckInDate || rs.CheckInDate > filter.CheckOutDate)))
+                          .Min(rt => (decimal?)rt.Price) ?? 0): null,
+                IsDateFiltered = isDateFiltered, // Tarih kontrolü burada yapılır
+                HotelAmenities = h.Amenities.Select(x => new AmenityDto
+                {
+                    Id = x.Id,
                     IconClass = x.IconClass,
                     Name = x.Name,
                     IsChecked = true,
@@ -43,7 +106,7 @@ namespace HotelBookingApp.Core.Application.Services
         // Tek bir otel bilgisi getirme
         public async Task<ServiceResult<HotelDto>> GetHotelByIdAsync(Guid id)
         {
-            var hotel = await _unitOfWork.Hotels.GetByIdAsync(id);
+            var hotel = await _unitOfWork.Hotels.GetHotelByIdWithAmenityAndRoomTypesAsync(id);
             if (hotel == null)
             {
                 return ServiceResult<HotelDto>.FailureResult("Hotel not found", HttpStatusCode.NotFound);
@@ -59,12 +122,33 @@ namespace HotelBookingApp.Core.Application.Services
                 RoomCount = hotel.RoomCount,
                 Description = hotel.Description,
                 Picture = hotel.Picture,
+                HotelAmenities = hotel.Amenities.Select(x => new AmenityDto
+                {
+                    Id = x.Id,
+                    IconClass = x.IconClass,
+                    Name = x.Name,
+                    IsChecked = true,
+                }).ToList(),
+                RoomTypes = hotel.RoomTypes.Select(x => new RoomTypeDto{
+                    Id = x.Id,
+                    Picture =x.Picture,
+                    Capacity = x.Capacity,
+                    Description = x.Description,
+                    Name = x.Name,
+                    HotelId = x.HotelId,
+                    roomAmenities = x.Amenities.Select(a => new RoomAmenityDto
+                    {
+                        IconClass = a.IconClass,
+                        Name=a.Name,
+                        Id = a.Id,
+                    }).ToList(),
+                }).ToList(),
             };
 
             return ServiceResult<HotelDto>.SuccessResult(hotelDto, HttpStatusCode.OK);
         }
 
-        
+
 
 
         // Yeni otel ekleme
@@ -143,7 +227,7 @@ namespace HotelBookingApp.Core.Application.Services
 
         public async Task<ServiceResult<UpdateHotelRequest>> PrepareUpdateHotelAsync(Guid id)
         {
-            var hotel = await _unitOfWork.Hotels.GetHotelByIdWithAmenityAsync(id);
+            var hotel = await _unitOfWork.Hotels.GetHotelByIdWithAmenityAndRoomTypesAsync(id);
             if (hotel == null)
             {
                 return ServiceResult<UpdateHotelRequest>.FailureResult("Hotel not found.", HttpStatusCode.NotFound);
@@ -197,7 +281,7 @@ namespace HotelBookingApp.Core.Application.Services
         // Otel güncelleme
         public async Task<ServiceResult<bool>> UpdateHotelAsync(Guid id, UpdateHotelRequest request)
         {
-            var hotel = await _unitOfWork.Hotels.GetHotelByIdWithAmenityAsync(id);
+            var hotel = await _unitOfWork.Hotels.GetHotelByIdWithAmenityAndRoomTypesAsync(id);
             if (hotel == null)
             {
                 return ServiceResult<bool>.FailureResult("Hotel not found.", HttpStatusCode.NotFound);
@@ -211,7 +295,26 @@ namespace HotelBookingApp.Core.Application.Services
             if (request.RoomCount.HasValue) hotel.RoomCount = request.RoomCount;
             if (!string.IsNullOrEmpty(request.Description)) hotel.Description = request.Description;
 
-            // Yeni bir fotoğraf yüklendiyse
+            // Seçili olanakları ekle
+            var selectedAmenities = request.Amenities
+                .Where(a => a.IsChecked)
+                .Select(a => new HotelAmenity { Id = a.Id }) // Sadece Id ile referans oluşturuyoruz
+                .ToList();
+
+            var oldAmenities = hotel.Amenities.Where(oa => !selectedAmenities.Any(a => a.Id == oa.Id)).ToList();
+
+            var newAmenities = selectedAmenities.Where(na => !hotel.Amenities.Any(ha => ha.Id == na.Id)).ToList();
+
+            foreach(var oldAmenity in oldAmenities)
+            {
+                hotel.Amenities.Remove(oldAmenity);
+            }
+            foreach (var newAmenity in newAmenities)
+            {
+                _unitOfWork.Attach(newAmenity);
+                hotel.Amenities.Add(newAmenity);
+            }
+
             if (request.Picture != null && request.Picture.Length > 0)
             {
                 var wwwrootFolder = _fileProvider.GetDirectoryContents("wwwroot");
